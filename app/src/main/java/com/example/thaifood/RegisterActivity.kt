@@ -43,7 +43,7 @@ class RegisterActivity : AppCompatActivity() {
 
                     Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
 
-                    // 👉 Chuyển qua Login
+                    // Chuyển qua Login
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
                 }

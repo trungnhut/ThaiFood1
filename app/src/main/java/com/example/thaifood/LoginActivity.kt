@@ -18,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
 
         val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
 
-        // 👉 Nút đăng nhập
+        //  Nút đăng nhập
         btnLogin.setOnClickListener {
 
             val email = etEmail.text.toString()
@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // 👉 Chuyển qua trang đăng ký
+        //  Chuyển qua trang đăng ký
         tvGoRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
