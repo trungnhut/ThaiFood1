@@ -30,13 +30,7 @@
             android:hint="Vạn Deal Xinh, Giảm Tới 50%"
             android:paddingStart="12dp"/>
 
-        <ImageView
-            android:id="@+id/imgCart"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="12dp"
-            android:src="@android:drawable/ic_menu_myplaces"
-            app:tint="@android:color/white" />
+
     </LinearLayout>
 
     <LinearLayout

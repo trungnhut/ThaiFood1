@@ -1,33 +1,66 @@
 package com.example.thaifood
 
 import android.os.Bundle
-import android.widget.LinearLayout
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class CartActivity : AppCompatActivity() {
+
+    private lateinit var tvCartTotal: TextView
+    private lateinit var cartAdapter: CartAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cart)
 
-        val cartContainer = findViewById<LinearLayout>(R.id.cartContainer)
+        tvCartTotal = findViewById(R.id.tvCartTotal)
+        val rvCartItems = findViewById<RecyclerView>(R.id.rvCartItems)
+        val btnContinueShopping = findViewById<Button>(R.id.btnContinueShopping)
+        val btnCheckout = findViewById<Button>(R.id.btnCheckout)
+        val etCartNote = findViewById<EditText>(R.id.etCartNote)
 
-        // Duyệt qua danh sách các món trong CartManager
+        rvCartItems.layoutManager = LinearLayoutManager(this)
+        cartAdapter = CartAdapter(CartManager.cartList) {
+
+            calculateTotal()
+        }
+        rvCartItems.adapter = cartAdapter
+
+
+        calculateTotal()
+
+
+        btnContinueShopping.setOnClickListener {
+            finish()
+        }
+
+        // Nút Đặt hàng
+        btnCheckout.setOnClickListener {
+            if (CartManager.cartList.isEmpty()) {
+                Toast.makeText(this, "Giỏ hàng trống, hãy chọn món nhé!", Toast.LENGTH_SHORT).show()
+            } else {
+                val ghiChu = etCartNote.text.toString()
+                Toast.makeText(this, "Đặt hàng thành công! Ghi chú: $ghiChu", Toast.LENGTH_LONG).show()
+
+
+                CartManager.cartList.clear()
+                cartAdapter.notifyDataSetChanged()
+                calculateTotal()
+            }
+        }
+    }
+
+
+    private fun calculateTotal() {
+        var total = 0
         for (item in CartManager.cartList) {
-            // Tạo 1 TextView đơn giản để hiển thị (Bạn có thể tự inflate cái CardView XML của bạn nếu muốn đẹp hơn)
-            val textView = TextView(this)
-            textView.text = "${item.name} - Số lượng: ${item.quantity} - Tổng: ${item.price * item.quantity}đ"
-            textView.textSize = 16f
-            textView.setPadding(16, 16, 16, 16)
-
-            cartContainer.addView(textView)
+            total += (item.price * item.quantity)
         }
-
-        if (CartManager.cartList.isEmpty()) {
-            val emptyTxt = TextView(this)
-            emptyTxt.text = "Giỏ hàng đang trống!"
-            emptyTxt.setPadding(16, 16, 16, 16)
-            cartContainer.addView(emptyTxt)
-        }
+        tvCartTotal.text = "Tổng cộng: ${total}đ"
     }
 }

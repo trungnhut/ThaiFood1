@@ -58,27 +58,31 @@ class MainActivity : AppCompatActivity() {
                 price = 105000,
                 imageResId = R.drawable.combo1,
                 viewType = Food.TYPE_COMBO,
-                description = "Gồm: 1 Súp Tom Yum, 1 Pad Thai, 2 Trà Sữa Thái" // Thêm chi tiết món
-            ),
+                description = " 1 Súp Tom Yum, 1 Pad Thai, 2 Trà Sữa Thái"),
             Food(
                 name = "COMBO 2",
                 price = 105000,
                 imageResId = R.drawable.combo2,
                 viewType = Food.TYPE_COMBO,
-                description = "Gồm: 1 Sườn Cay, 1 Xôi Xoài, 2 Nước Ngọt" // Thêm chi tiết món
-            )
+                description = " 1 Sườn Cay, 1 Xôi Xoài, 2 Nước Ngọt")
         )
 
         val rvCombo = findViewById<RecyclerView>(R.id.rvCombo)
-        rvCombo.layoutManager = LinearLayoutManager(this) // Combo cuộn dọc
+        rvCombo.layoutManager = LinearLayoutManager(this)
         rvCombo.adapter = FoodAdapter(combos) { clickedItem ->
             openDetail(clickedItem)
         }
 
-        //GIỎ HÀNG
-        val imgCart = findViewById<ImageView>(R.id.imgCart)
-        imgCart.setOnClickListener {
-            startActivity(Intent(this, CartActivity::class.java))
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigation)
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_orders -> {
+                    startActivity(Intent(this, CartActivity::class.java))
+                    true
+                }
+                else -> false
+            }
         }
     }
 
