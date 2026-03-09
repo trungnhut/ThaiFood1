@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/etFoodName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tên món"/>
+
+    <EditText
+        android:id="@+id/etFoodPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Giá"/>
+
+    <EditText
+        android:id="@+id/etFoodDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mô tả"/>
+
+    <ImageView
+        android:id="@+id/imgFood"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/padthai"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu"/>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quay lại"/>
+
+</LinearLayout>

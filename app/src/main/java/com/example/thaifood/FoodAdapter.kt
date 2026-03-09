@@ -53,7 +53,7 @@ class FoodAdapter(
 
         if (holder is CollectionViewHolder) {
             holder.img.setImageResource(item.imageResId)
-            holder.tvPromo.text = item.promoText
+            holder.tvPromo.text = item.name
         } else if (holder is FeaturedViewHolder) {
             holder.img.setImageResource(item.imageResId)
             holder.tvName.text = item.name

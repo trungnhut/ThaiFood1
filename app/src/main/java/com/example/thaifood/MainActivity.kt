@@ -2,7 +2,10 @@ package com.example.thaifood
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,6 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var db: DatabaseHelper
+    private lateinit var rvCollection: RecyclerView
+    private lateinit var etSearch: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,58 +30,54 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        //BỘ SƯU TẬP
-        val collections = listOf(
-            Food(name = "Súp Tom Yum", price = 65000, imageResId = R.drawable.suptomyum, promoText = "Súp TomYum", viewType = Food.TYPE_COLLECTION),
-            Food(name = "Xôi Xoài", price = 45000, imageResId = R.drawable.xoixoai, promoText = "Gỏi Xoài", viewType = Food.TYPE_COLLECTION),
-            Food(name = "Ba Khía", price = 50000, imageResId = R.drawable.bakhia, promoText = "Ba Khía", viewType = Food.TYPE_COLLECTION),
-            Food(name = "Gỏi Tôm Xoài", price = 60000, imageResId = R.drawable.goitomxoai, promoText = "Gỏi Tôm Xoài", viewType = Food.TYPE_COLLECTION),
-            Food(name = "Lạp Bò", price = 70000, imageResId = R.drawable.labbo, promoText = "Lạp Bò", viewType = Food.TYPE_COLLECTION),
-            Food(name = "Sườn Cay", price = 105000, imageResId = R.drawable.suoncay, promoText = "Sườn Cay", viewType = Food.TYPE_COLLECTION)
-        )
+        db = DatabaseHelper(this)
 
-        val rvCollection = findViewById<RecyclerView>(R.id.rvCollection)
-        rvCollection.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        // ô tìm kiếm
+        etSearch = findViewById(R.id.etSearch)
 
-        rvCollection.adapter = FoodAdapter(collections) { clickedItem ->
-            openDetail(clickedItem)
+        // nếu database chưa có dữ liệu → thêm dữ liệu mẫu
+        if (db.getAllFoods().isEmpty()) {
+            insertSampleFood()
         }
 
-        // MÓN NỔI BẬT
-        val featuredFoods = listOf(
-            Food(name = "Pad Thai", price = 55000, imageResId = R.drawable.padthai, viewType = Food.TYPE_FEATURED),
-            Food(name = "Tom Yum", price = 65000, imageResId = R.drawable.suptomyum, viewType = Food.TYPE_FEATURED)
-        )
+        rvCollection = findViewById(R.id.rvCollection)
+        rvCollection.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        val rvFeaturedFood = findViewById<RecyclerView>(R.id.rvFeaturedFood)
-        rvFeaturedFood.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rvFeaturedFood.adapter = FoodAdapter(featuredFoods) { clickedItem ->
-            openDetail(clickedItem)
+        loadFoods()
+
+        // sự kiện tìm kiếm
+        etSearch.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable?) {
+
+                val keyword = s.toString()
+
+                if (keyword.isEmpty()) {
+                    loadFoods()
+                } else {
+
+                    val foods = db.searchFood(keyword)
+
+                    rvCollection.adapter = FoodAdapter(foods) { clickedItem ->
+                        openDetail(clickedItem)
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        })
+
+        val btnAdd = findViewById<Button>(R.id.btnAddFood)
+        btnAdd.setOnClickListener {
+            startActivity(Intent(this, AddFoodActivity::class.java))
         }
 
-        // COMBO
-        val combos = listOf(
-            Food(
-                name = "COMBO 1",
-                price = 105000,
-                imageResId = R.drawable.combo1,
-                viewType = Food.TYPE_COMBO,
-                description = " 1 Súp Tom Yum, 1 Pad Thai, 2 Trà Sữa Thái"),
-            Food(
-                name = "COMBO 2",
-                price = 105000,
-                imageResId = R.drawable.combo2,
-                viewType = Food.TYPE_COMBO,
-                description = " 1 Sườn Cay, 1 Xôi Xoài, 2 Nước Ngọt")
-        )
-
-        val rvCombo = findViewById<RecyclerView>(R.id.rvCombo)
-        rvCombo.layoutManager = LinearLayoutManager(this)
-        rvCombo.adapter = FoodAdapter(combos) { clickedItem ->
-            openDetail(clickedItem)
-        }
-
-        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigation)
+        val bottomNav =
+            findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigation)
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -86,12 +90,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadFoods()
+    }
+
+    private fun loadFoods() {
+        val foods = db.getAllFoods()
+
+        rvCollection.adapter = FoodAdapter(foods) { clickedItem ->
+            openDetail(clickedItem)
+        }
+    }
+
+    private fun insertSampleFood() {
+
+        db.insertFood(
+            Food("Súp Tom Yum",65000,R.drawable.suptomyum,"Súp Tom Yum",Food.TYPE_COLLECTION)
+        )
+
+        db.insertFood(
+            Food("Ba Khía",50000,R.drawable.bakhia,"Ba Khía",Food.TYPE_COLLECTION)
+        )
+
+        db.insertFood(
+            Food("Gỏi Tôm Xoài",60000,R.drawable.goitomxoai,"Gỏi Tôm Xoài",Food.TYPE_COLLECTION)
+        )
+
+        db.insertFood(
+            Food("Lạp Bò",70000,R.drawable.labbo,"Lạp Bò",Food.TYPE_COLLECTION)
+        )
+
+        db.insertFood(
+            Food("Sườn Cay",105000,R.drawable.suoncay,"Sườn Cay",Food.TYPE_COLLECTION)
+        )
+
+        db.insertFood(
+            Food("Pad Thai",55000,R.drawable.padthai,"Pad Thai",Food.TYPE_COLLECTION)
+        )
+    }
+
     private fun openDetail(item: Food) {
         val intent = Intent(this, FoodDetailActivity::class.java)
+
         intent.putExtra("FOOD_NAME", item.name)
         intent.putExtra("FOOD_PRICE", item.price)
         intent.putExtra("FOOD_IMAGE", item.imageResId)
         intent.putExtra("FOOD_DESC", item.description)
+
         startActivity(intent)
     }
 }

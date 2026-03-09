@@ -58,7 +58,7 @@
 
         <Button
             android:id="@+id/btnMinus"
-            android:layout_width="wrap_content"
+            android:layout_width="68dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#FF5722"
             android:text="-" />
@@ -67,16 +67,16 @@
             android:id="@+id/tvQuantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:text="1" />
-
-
 
         <Button
             android:id="@+id/btnPlus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+"
-            android:backgroundTint="#FF5722" />
+            android:backgroundTint="#FF5722"
+            android:text="+" />
     </LinearLayout>
 
     <Space

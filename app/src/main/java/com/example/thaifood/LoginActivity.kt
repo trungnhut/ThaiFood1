@@ -11,10 +11,12 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+
         val etEmail = findViewById<EditText>(R.id.etEmailLogin)
         val etPassword = findViewById<EditText>(R.id.etPasswordLogin)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvGoRegister = findViewById<TextView>(R.id.tvGoRegister)
+
 
         val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
 

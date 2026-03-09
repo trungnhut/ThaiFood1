@@ -1,12 +1,11 @@
 package com.example.thaifood
 
 data class Food(
-    val name: String,
-    val price: Int,
-    val imageResId: Int,
-    val promoText: String = "",
-    val viewType: Int,
-    val description: String = ""
+    var name: String,
+    var price: Int, var imageResId: Int,
+    var description: String? = null,
+    var viewType: Int = TYPE_COLLECTION
+
 ) {
     companion object {
         const val TYPE_COLLECTION = 1

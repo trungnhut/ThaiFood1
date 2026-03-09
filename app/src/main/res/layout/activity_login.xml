@@ -56,6 +56,13 @@
             android:text="Đăng nhập"
             android:backgroundTint="#FF9800"
             android:textColor="@android:color/white"/>
+        <CheckBox
+            android:id="@+id/cbRemember"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lưu đăng nhập"
+            android:textColor="#FF5722"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Chuyển sang đăng ký -->
         <TextView
