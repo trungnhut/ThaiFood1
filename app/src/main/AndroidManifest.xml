@@ -12,12 +12,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ThaiFood">
         <activity
+            android:name=".OrderStatusActivity"
+            android:exported="false" />
+        <activity
             android:name=".CartActivity"
             android:exported="false" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".FoodDetailActivity" />
-        <activity android:name=".AddFoodActivity"/>
+        <activity android:name=".AddFoodActivity" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminOrderActivity"
+            android:exported="false" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">

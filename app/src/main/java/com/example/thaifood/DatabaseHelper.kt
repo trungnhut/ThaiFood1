@@ -21,6 +21,17 @@ class DatabaseHelper(context: Context) :
         """
 
         db.execSQL(createTable)
+
+        val createOrderTable = """
+        CREATE TABLE orders(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customerName TEXT,
+            details TEXT,
+            totalPrice INTEGER,
+            status INTEGER
+        )
+    """
+        db.execSQL(createOrderTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
@@ -96,5 +107,46 @@ class DatabaseHelper(context: Context) :
 
         cursor.close()
         return list
+    }
+    fun insertOrder(order: Order) {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("customerName", order.customerName)
+        values.put("details", order.details)
+        values.put("totalPrice", order.totalPrice)
+        values.put("status", order.status) // Mặc định là 0 (Chờ xử lý)
+
+        db.insert("orders", null, values)
+    }
+
+    // Lấy danh sách tất cả đơn hàng (dành cho Admin)
+    fun getAllOrders(): List<Order> {
+        val list = mutableListOf<Order>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM orders ORDER BY id DESC", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val order = Order(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName")),
+                    details = cursor.getString(cursor.getColumnIndexOrThrow("details")),
+                    totalPrice = cursor.getInt(cursor.getColumnIndexOrThrow("totalPrice")),
+                    status = cursor.getInt(cursor.getColumnIndexOrThrow("status"))
+                )
+                list.add(order)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    // Cập nhật trạng thái đơn hàng (Dùng để Hủy đơn)
+    fun updateOrderStatus(orderId: Int, newStatus: Int) {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("status", newStatus)
+        // Cập nhật dòng có id tương ứng
+        db.update("orders", values, "id = ?", arrayOf(orderId.toString()))
     }
 }

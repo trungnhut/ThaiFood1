@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +20,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rvCollection: RecyclerView
     private lateinit var etSearch: EditText
 
+    //admin
+    //mk: admin
+    //tk KH: Trungnhut11@gmail.com
+    //mk: nhut
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,10 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         db = DatabaseHelper(this)
 
-        // ô tìm kiếm
+        //ô tìm kiếm
         etSearch = findViewById(R.id.etSearch)
 
-        // nếu database chưa có dữ liệu → thêm dữ liệu mẫu
+
         if (db.getAllFoods().isEmpty()) {
             insertSampleFood()
         }
@@ -46,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         loadFoods()
 
-        // sự kiện tìm kiếm
+        //tìm kiếm
         etSearch.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable?) {
@@ -76,6 +81,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, AddFoodActivity::class.java))
         }
 
+        val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
+        val role = sharedPref.getInt("role", 0)
+
+        // Nếu là Khách (role == 0), ẩn nút Thêm món đi
+        if (role == 0) {
+            btnAdd.visibility = View.GONE
+        }
         val bottomNav =
             findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigation)
 
@@ -85,9 +97,14 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, CartActivity::class.java))
                     true
                 }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    true
+                }
                 else -> false
             }
         }
+
     }
 
     override fun onResume() {
