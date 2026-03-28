@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class OrderAdapter(
     private var orderList: List<Order>,
-    private val onCancelClick: (Order) -> Unit // Sự kiện khi bấm nút Hủy
+    private val onCancelClick: (Order) -> Unit,
+    private val onConfirmClick: (Order) -> Unit // THÊM SỰ KIỆN XÁC NHẬN
 ) : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     class OrderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -19,6 +20,7 @@ class OrderAdapter(
         val tvPrice: TextView = itemView.findViewById(R.id.tvOrderPrice)
         val tvStatus: TextView = itemView.findViewById(R.id.tvOrderStatus)
         val btnCancel: Button = itemView.findViewById(R.id.btnCancelOrder)
+        val btnConfirm: Button = itemView.findViewById(R.id.btnConfirmOrder) // THÊM NÚT NÀY
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
@@ -31,28 +33,37 @@ class OrderAdapter(
 
         holder.tvCustomer.text = "Khách hàng: ${order.customerName}"
         holder.tvDetails.text = order.details
-        holder.tvPrice.text = "Tổng: ${order.totalPrice}đ"
+        holder.tvPrice.text = "Tổng: ${order.totalPrice.toVND()}"
 
-        // Xử lý trạng thái (0: Chờ xử lý, 1: Đã hủy)
-        if (order.status == 0) {
-            holder.tvStatus.text = "Chờ xử lý"
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")) // Màu xanh lá
-            holder.btnCancel.visibility = View.VISIBLE // Hiện nút hủy
-
-            // Bấm nút hủy
-            holder.btnCancel.setOnClickListener {
-                onCancelClick(order)
+        // --- XỬ LÝ TRẠNG THÁI ---
+        when (order.status) {
+            0 -> { // Chờ xử lý
+                holder.tvStatus.text = "Chờ xử lý"
+                holder.tvStatus.setTextColor(Color.parseColor("#FF9800")) // Màu cam
+                holder.btnCancel.visibility = View.VISIBLE
+                holder.btnConfirm.visibility = View.VISIBLE
             }
-        } else {
-            holder.tvStatus.text = "Đã hủy"
-            holder.tvStatus.setTextColor(Color.parseColor("#F44336")) // Màu đỏ
-            holder.btnCancel.visibility = View.GONE // Ẩn nút hủy đi vì đã hủy rồi
+            1 -> { // Đã hủy
+                holder.tvStatus.text = "Đã hủy"
+                holder.tvStatus.setTextColor(Color.parseColor("#F44336")) // Màu đỏ
+                holder.btnCancel.visibility = View.GONE
+                holder.btnConfirm.visibility = View.GONE
+            }
+            2 -> { // Đã xác nhận
+                holder.tvStatus.text = "Đang chuẩn bị món"
+                holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")) // Màu xanh
+                holder.btnCancel.visibility = View.GONE
+                holder.btnConfirm.visibility = View.GONE
+            }
         }
+
+        // Bắt sự kiện click
+        holder.btnCancel.setOnClickListener { onCancelClick(order) }
+        holder.btnConfirm.setOnClickListener { onConfirmClick(order) }
     }
 
     override fun getItemCount(): Int = orderList.size
 
-    // Hàm cập nhật lại danh sách khi có thay đổi
     fun updateData(newList: List<Order>) {
         orderList = newList
         notifyDataSetChanged()

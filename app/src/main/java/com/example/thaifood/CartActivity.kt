@@ -32,9 +32,7 @@ class CartActivity : AppCompatActivity() {
         }
         rvCartItems.adapter = cartAdapter
 
-
         calculateTotal()
-
 
         btnContinueShopping.setOnClickListener {
             finish()
@@ -47,7 +45,6 @@ class CartActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 1. Gom chi tiết giỏ hàng thành 1 chuỗi văn bản
             var orderDetails = ""
             var totalPrice = 0
             for (item in CartManager.cartList) {
@@ -55,46 +52,43 @@ class CartActivity : AppCompatActivity() {
                 totalPrice += (item.price * item.quantity)
             }
 
-            // Ghi chú của khách
             val ghiChu = etCartNote.text.toString().trim()
             if (ghiChu.isNotEmpty()) {
                 orderDetails += "Ghi chú: $ghiChu"
             }
 
-            // 2. Lấy tên khách hàng từ SharedPreferences (đã lưu lúc đăng nhập)
             val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
             val customerName = sharedPref.getString("fullName", "Khách ẩn danh") ?: "Khách"
 
-            // 3. Tạo đối tượng Order và lưu vào DB
             val newOrder = Order(
                 customerName = customerName,
                 details = orderDetails,
                 totalPrice = totalPrice,
-                status = 0 // 0: Đang chờ xử lý
+                status = 0
             )
 
             val db = DatabaseHelper(this)
-            db.insertOrder(newOrder)
+            val newOrderId = db.insertOrder(newOrder)
 
             Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show()
 
-            // 4. Xóa giỏ hàng và cập nhật giao diện
             CartManager.cartList.clear()
             cartAdapter.notifyDataSetChanged()
             calculateTotal()
-            etCartNote.setText("") // Xóa trắng ô ghi chú
+            etCartNote.setText("")
+
             val intent = Intent(this, OrderStatusActivity::class.java)
+            intent.putExtra("ORDER_ID", newOrderId.toInt())
             startActivity(intent)
             finish()
         }
     }
-
 
     private fun calculateTotal() {
         var total = 0
         for (item in CartManager.cartList) {
             total += (item.price * item.quantity)
         }
-        tvCartTotal.text = "Tổng cộng: ${total}đ"
+        tvCartTotal.text = "Tổng cộng: ${total.toVND()}"
     }
 }

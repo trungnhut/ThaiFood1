@@ -1,5 +1,6 @@
 package com.example.thaifood
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
@@ -21,33 +22,36 @@ class AdminOrderActivity : AppCompatActivity() {
         rvOrders = findViewById(R.id.rvAdminOrders)
         val btnBack = findViewById<ImageView>(R.id.btnBackAdmin)
 
-        // Nút quay lại
         btnBack.setOnClickListener {
             finish()
         }
 
-        // Cài đặt RecyclerView
         rvOrders.layoutManager = LinearLayoutManager(this)
 
-        // Khởi tạo Adapter với danh sách rỗng, kèm theo hành động Hủy đơn
-        orderAdapter = OrderAdapter(emptyList()) { orderToCancel ->
-            // Khi Admin bấm nút Hủy ở 1 đơn hàng:
-            db.updateOrderStatus(orderToCancel.id, 1) // 1 là trạng thái Đã hủy
-            Toast.makeText(this, "Đã hủy đơn của ${orderToCancel.customerName}", Toast.LENGTH_SHORT).show()
+        rvOrders.layoutManager = LinearLayoutManager(this)
 
-            // Tải lại danh sách sau khi hủy
-            loadOrders()
-        }
+        orderAdapter = OrderAdapter(emptyList(),
+            onCancelClick = { orderToCancel ->
+                db.updateOrderStatus(orderToCancel.id, 1)
+                Toast.makeText(this, "Đã hủy đơn của ${orderToCancel.customerName}", Toast.LENGTH_SHORT).show()
+                loadOrders()
+            },
+            onConfirmClick = { orderToConfirm ->
+                db.updateOrderStatus(orderToConfirm.id, 2)
+                Toast.makeText(this, "Đã xác nhận đơn của ${orderToConfirm.customerName}", Toast.LENGTH_SHORT).show()
+                loadOrders()
+            }
+        )
         rvOrders.adapter = orderAdapter
 
-        // Lần đầu mở màn hình -> tải dữ liệu
         loadOrders()
     }
-
+    override fun onResume() {
+        super.onResume()
+        loadOrders()
+    }
     private fun loadOrders() {
-        // Lấy tất cả đơn hàng từ SQLite
         val orders = db.getAllOrders()
-        // Cập nhật vào Adapter
         orderAdapter.updateData(orders)
     }
 }

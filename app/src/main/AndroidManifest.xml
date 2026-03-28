@@ -21,7 +21,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".FoodDetailActivity" />
         <activity android:name=".AddFoodActivity" />
-
+        <activity android:name=".CanceledOrderActivity" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />

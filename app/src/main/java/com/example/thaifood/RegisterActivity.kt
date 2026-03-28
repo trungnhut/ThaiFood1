@@ -17,15 +17,11 @@ class RegisterActivity : AppCompatActivity() {
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val tvGoLogin = findViewById<TextView>(R.id.tvGoLogin)
 
-        val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
-
-        // CHUYỂN TRANG ĐĂNG NHẬP
         tvGoLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
-        // XỬ LÝ ĐĂNG KÝ
         btnRegister.setOnClickListener {
             val fullName = etFullName.text.toString().trim()
             val email = etEmail.text.toString().trim()
@@ -34,20 +30,20 @@ class RegisterActivity : AppCompatActivity() {
 
             if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener // Dừng lại không chạy tiếp
+                return@setOnClickListener
             }
 
-            // Mặc định tài khoản đăng ký mới là Khách (role = 0)
-            val editor = sharedPref.edit()
-            editor.putString("email", email)
-            editor.putString("password", password)
-            editor.putString("fullName", fullName)
-            editor.putInt("role", 0) // 0: Khách
-            editor.apply()
+            // Gọi Database để lưu người dùng mới
+            val db = DatabaseHelper(this)
+            val isSuccess = db.registerUser(fullName, email, phone, password)
 
-            Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            if (isSuccess) {
+                Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            } else {
+                Toast.makeText(this, "Đăng ký thất bại! Email có thể đã tồn tại.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

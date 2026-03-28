@@ -31,7 +31,7 @@ class CartAdapter(
 
         holder.imgFood.setImageResource(item.imageRes)
         holder.tvName.text = item.name
-        holder.tvPrice.text = "${item.price * item.quantity}đ"
+        holder.tvPrice.text = (item.price * item.quantity).toVND()
         holder.tvQuantity.text = item.quantity.toString()
 
         holder.btnPlus.setOnClickListener {

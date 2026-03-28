@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class ProfileActivity : AppCompatActivity() {
@@ -15,30 +16,42 @@ class ProfileActivity : AppCompatActivity() {
 
         val tvName = findViewById<TextView>(R.id.tvProfileName)
         val tvRole = findViewById<TextView>(R.id.tvProfileRole)
+        val tvEmail = findViewById<TextView>(R.id.tvProfileEmail)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
-        val btnManageOrders = findViewById<Button>(R.id.btnManageOrders) // Nút quản lý mới thêm
+        val btnManageOrders = findViewById<Button>(R.id.btnManageOrders)
+        val btnOrderHistory = findViewById<Button>(R.id.btnOrderHistory)
 
         val sharedPref = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE)
 
         // 1. Lấy thông tin hiển thị
         tvName.text = sharedPref.getString("fullName", "Người dùng")
-        val role = sharedPref.getInt("role", 0)
 
-        // 2. Phân quyền hiển thị
-        if (role == 1) {
-            tvRole.text = "Tài khoản: Admin"
-            btnManageOrders.visibility = View.VISIBLE // Hiện nút nếu là Admin
-        } else {
-            tvRole.text = "Tài khoản: Khách hàng"
-            btnManageOrders.visibility = View.GONE // Ẩn nút đi nếu là Khách
+        val savedEmail = sharedPref.getString("email", "")
+        if (savedEmail!!.isNotEmpty()) {
+            tvEmail.text = savedEmail
         }
 
-        // 3. Xử lý khi bấm nút Quản lý đơn hàng
+        val role = sharedPref.getInt("role", 0)
+
+        if (role == 1) {
+            tvRole.text = "Tài khoản: Admin"
+            btnManageOrders.visibility = View.VISIBLE
+            btnOrderHistory.visibility = View.GONE
+        } else {
+            tvRole.text = "Tài khoản: Khách hàng"
+            btnManageOrders.visibility = View.GONE
+            btnOrderHistory.visibility = View.VISIBLE
+        }
+
         btnManageOrders.setOnClickListener {
             startActivity(Intent(this, AdminOrderActivity::class.java))
         }
 
-        // 4. Xử lý Đăng xuất
+        btnOrderHistory.setOnClickListener {
+            Toast.makeText(this, "Sắp ra mắt chức năng xem lịch sử", Toast.LENGTH_SHORT).show()
+
+        }
+
         btnLogout.setOnClickListener {
             val editor = sharedPref.edit()
             editor.putBoolean("isLoggedIn", false)

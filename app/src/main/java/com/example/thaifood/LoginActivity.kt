@@ -18,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
 
         val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
 
-        // Kiểm tra xem đã đăng nhập trước đó chưa (nếu có lưu)
+
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
         if (isLoggedIn) {
             startActivity(Intent(this, MainActivity::class.java))
@@ -37,46 +37,28 @@ class LoginActivity : AppCompatActivity() {
             val editor = sharedPref.edit()
             var loginSuccess = false
 
-            // Kiểm tra 3 tài khoản cứng (Hardcode)
+
             if (email == "admin" && password == "admin") {
-                editor.putInt("role", 1) // 1 là Admin
+                editor.putInt("role", 1)
                 editor.putString("fullName", "Quản trị viên")
                 loginSuccess = true
-            } else if (email == "khach1" && password == "123") {
-                editor.putInt("role", 0) // 0 là Khách
-                editor.putString("fullName", "Khách hàng 1")
-                loginSuccess = true
-            } else if (email == "khach2" && password == "123") {
-                editor.putInt("role", 0)
-                editor.putString("fullName", "Khách hàng 2")
-                loginSuccess = true
             } else {
-                // Nếu không phải 3 tài khoản cứng, kiểm tra tài khoản đã đăng ký trong SharedPreferences
-                val savedEmail = sharedPref.getString("email", "")
-                val savedPassword = sharedPref.getString("password", "")
 
-                // Lấy tên người dùng đã lưu lúc đăng ký (nếu có), nếu không có thì lấy tạm email
-                val savedFullName = sharedPref.getString("fullName", savedEmail)
+                val db = DatabaseHelper(this)
+                val userFromDB = db.loginUser(email, password)
 
-                if (email == savedEmail && password == savedPassword && savedEmail!!.isNotEmpty()) {
+                if (userFromDB != null) {
 
-                    // --- ĐÂY LÀ PHẦN ĐÃ ĐƯỢC SỬA LỖI ---
-                    editor.putInt("role", 0) // Ép quyền về 0 (Khách hàng) để xóa "bóng ma" Admin
-                    editor.putString("fullName", savedFullName) // Lưu tên hiển thị
-                    // -----------------------------------
-
+                    editor.putInt("role", userFromDB.second)
+                    editor.putString("fullName", userFromDB.first)
                     loginSuccess = true
                 }
             }
 
             if (loginSuccess) {
                 if (cbRemember.isChecked) {
-                    editor.putBoolean("isLoggedIn", true) // Lưu trạng thái đăng nhập
-                } else {
-                    // Nếu không check Nhớ mật khẩu, ta cũng có thể quyết định không lưu (tùy logic app)
-                    // Tạm thời ở đây vẫn cho phép đăng nhập qua phiên này
+                    editor.putBoolean("isLoggedIn", true)
                 }
-
                 editor.apply()
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java))

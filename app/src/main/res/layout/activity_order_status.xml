@@ -8,6 +8,7 @@
     android:background="#F5F5F5">
 
     <TextView
+        android:id="@+id/tvStatusTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Trạng Thái Đơn Hàng"
@@ -61,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
     <Button
         android:id="@+id/btnCancelOrderCustomer"
         android:layout_width="match_parent"
@@ -70,6 +72,7 @@
         android:textColor="@android:color/white"
         android:layout_marginBottom="12dp"
         android:padding="12dp"/>
+
     <Button
         android:id="@+id/btnBackToHomeStatus"
         android:layout_width="match_parent"

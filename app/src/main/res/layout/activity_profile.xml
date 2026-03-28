@@ -4,29 +4,70 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center_horizontal">
+    android:background="#F9F9F9">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@android:drawable/ic_menu_myplaces"
-        android:layout_marginBottom="16dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvProfileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#333333"/>
+
+        <TextView
+            android:id="@+id/tvProfileRole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#888888"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/tvProfileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
+        android:text="Thông tin liên hệ"
         android:textStyle="bold"
+        android:textColor="#555555"
         android:layout_marginBottom="8dp"/>
 
-    <TextView
-        android:id="@+id/tvProfileRole"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="32dp"/>
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:elevation="2dp"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_dialog_email"
+            android:layout_marginEnd="12dp"/>
+
+        <TextView
+            android:id="@+id/tvProfileEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chưa cập nhật email"
+            android:textSize="16sp"
+            android:textColor="#333333"/>
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnManageOrders"
         android:layout_width="match_parent"
@@ -34,13 +75,31 @@
         android:text="Quản lý tất cả đơn hàng"
         android:backgroundTint="#FF9800"
         android:textColor="@android:color/white"
-        android:layout_marginBottom="16dp"
+        android:padding="12dp"
         android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnOrderHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lịch sử đặt hàng của tôi"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:visibility="gone" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Đăng xuất"
-        android:backgroundTint="#F44336"/>
+        android:backgroundTint="#F44336"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"/>
 
 </LinearLayout>

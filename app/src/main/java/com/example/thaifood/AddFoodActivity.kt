@@ -1,5 +1,6 @@
 package com.example.thaifood
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -31,56 +32,69 @@ class AddFoodActivity : AppCompatActivity() {
         val etPrice = findViewById<EditText>(R.id.etFoodPrice)
         val etDesc = findViewById<EditText>(R.id.etFoodDesc)
 
-        // 1. Cài đặt Spinner (Khung chọn danh mục món ăn)
         val spCategory = findViewById<Spinner>(R.id.spFoodCategory)
         val categoryList = arrayOf("Món Chính", "Món Nổi Bật", "Combo Dành Cho Nhóm")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryList)
         spCategory.adapter = spinnerAdapter
 
-        // 2. Sự kiện bấm vào hình ảnh để mở thư viện
         imgFood.setOnClickListener {
-            pickImageLauncher.launch("image/*") // Mở thư viện ảnh
+            pickImageLauncher.launch(arrayOf("image/*"))
         }
 
-        // 3. Sự kiện bấm nút Lưu
+        val originalName = intent.getStringExtra("EDIT_FOOD_NAME")
+
+        if (originalName != null) {
+
+            etName.setText(originalName)
+            val oldPrice = intent.getIntExtra("EDIT_FOOD_PRICE", 0)
+            if (oldPrice > 0) {
+                etPrice.setText(oldPrice.toString())
+            }
+            etDesc.setText(intent.getStringExtra("EDIT_FOOD_DESC"))
+
+            btnSave.text = "Cập nhật thông tin"
+        }
+
         btnSave.setOnClickListener {
             val uriString = selectedImageUri?.toString() ?: ""
 
-            // Lấy loại món ăn dựa vào lựa chọn ở Spinner
             val selectedType = when (spCategory.selectedItemPosition) {
-                0 -> Food.TYPE_COLLECTION  // "Món Chính"
-                1 -> Food.TYPE_FEATURED    // "Món Nổi Bật" (Hãy đảm bảo trong file Food.kt bạn đã khai báo TYPE_FEATURED)
-                2 -> Food.TYPE_COMBO       // "Combo" (Hãy đảm bảo trong file Food.kt bạn đã khai báo TYPE_COMBO)
+                0 -> Food.TYPE_COLLECTION
+                1 -> Food.TYPE_FEATURED
+                2 -> Food.TYPE_COMBO
                 else -> Food.TYPE_COLLECTION
             }
 
-            // Tạo đối tượng món ăn mới
+            val priceString = etPrice.text.toString().trim()
+            val priceValue = if (priceString.isNotEmpty()) priceString.toInt() else 0
+
             val food = Food(
-                name = etName.text.toString(),
-                price = etPrice.text.toString().toInt(),
-                description = etDesc.text.toString(),
-                imageResId = R.drawable.padthai, // Vẫn đang tạm lưu hình Padthai mặc định nhé
-                viewType = selectedType          // Gán loại món vừa chọn vào đây
+                name = etName.text.toString().trim(),
+                price = priceValue,
+                description = etDesc.text.toString().trim(),
+                imageResId = R.drawable.padthai,
+                viewType = selectedType,
+                imageUri = uriString
             )
 
-            // Lưu vào Database
-            db.insertFood(food)
+            if (originalName != null) {
+                db.updateFood(food, originalName)
+            } else {
+                db.insertFood(food)
+            }
 
-            // Đóng màn hình quay về trang trước
             finish()
         }
 
-        // Sự kiện bấm nút Quay lại
         btnBack.setOnClickListener {
             finish()
         }
     }
-
-    // Hàm xử lý sau khi chọn ảnh từ thư viện xong
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         if (uri != null) {
+            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             selectedImageUri = uri
-            imgFood.setImageURI(uri) // Hiển thị ảnh vừa chọn lên ImageView
+            imgFood.setImageURI(uri)
         }
     }
 }

@@ -106,5 +106,23 @@
             android:layout_weight="2"
             android:backgroundTint="#FF5722"
             android:text="Thêm vào giỏ hàng" />
+        <Button
+            android:id="@+id/btnEditFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chỉnh sửa món này"
+            android:backgroundTint="#2196F3"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/btnDeleteFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xóa món ăn này"
+            android:backgroundTint="#F44336"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>
